@@ -350,6 +350,27 @@ function deserializeField(schema: Schema, fieldName: string, fieldType: any, rea
             return undefined;
         }
 
+        if (fieldType.kind === 'option-rs') {
+            const option = reader.readU8();
+            if (option) {
+                return deserializeField(
+                    schema,
+                    fieldName,
+                    fieldType.type,
+                    reader
+                );
+            } else {
+                deserializeField(
+                    schema,
+                    fieldName,
+                    fieldType.type,
+                    reader
+                );                
+                return undefined;
+            }
+            
+        }
+
         return deserializeStruct(schema, fieldType, reader);
     } catch (error) {
         if (error instanceof BorshError) {
